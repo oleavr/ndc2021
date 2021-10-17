@@ -1,6 +1,5 @@
 <template>
   <div>
-    <!-- Remove this component to get started! -->
-    <NuxtWelcome />
+    <el-button type="primary">Hello</el-button>
   </div>
 </template>
