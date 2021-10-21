@@ -17,26 +17,27 @@ export interface State {
   status: 'disconnected' | 'connecting' | 'connected'
   client: frida.Client
   script: frida.Script | null
-  metrics: Metric[]
+  touch: 'idle' | 'active'
   error: Error | null
 }
 
-export interface Metric {
-  label: string
-  value: string
+export interface Point {
+  x: number
+  y: number
 }
 
 const SET_DISCONNECTED = 'Disconnected'
 const SET_CONNECTING = 'Connecting'
 const SET_CONNECTED = 'Connected'
-const SET_METRICS = 'Set Metrics'
+
+const LEFT_EDGE = 113
 
 export const store = createStore<State>({
   state: {
     status: 'disconnected',
-    client: new frida.Client('127.0.0.1:27042'),
+    client: new frida.Client(location.hostname + ':27042'),
     script: null,
-    metrics: [],
+    touch: 'idle',
     error: null,
   },
   actions: {
@@ -44,18 +45,18 @@ export const store = createStore<State>({
       commit(SET_CONNECTING)
 
       try {
-        let quake: frida.Process | undefined
+        let target: frida.Process | undefined
         do {
           const processes = await state.client.enumerateProcesses()
 
-          quake = processes.find(({ name }) => name === 'QuakeSpasm')
-          if (quake === undefined) {
+          target = processes.find(({ name }) => name === 'MorphWiz')
+          if (target === undefined) {
             await sleep(1000)
             continue
           }
-        } while (quake === undefined)
+        } while (target === undefined)
 
-        const session = await state.client.attach(quake.pid)
+        const session = await state.client.attach(target.pid)
         session.detached.connect(reason => {
           if (state.status === 'connected') {
             let message = ''
@@ -71,18 +72,9 @@ export const store = createStore<State>({
 
         const script = await session.createScript(agent)
         script.message.connect(message => {
-          let handled = false
-
-          if (message.type === frida.MessageType.Send) {
-            const { payload } = message
-
-            if (payload.type === 'metrics') {
-              commit(SET_METRICS, { metrics: payload.metrics })
-              handled = true
-            }
-          }
-
-          if (!handled) {
+          if (message.type === frida.MessageType.Error) {
+            console.error(message.stack)
+          } else {
             console.warn('Unhandled message:', message)
           }
         })
@@ -93,15 +85,41 @@ export const store = createStore<State>({
         commit(SET_DISCONNECTED, { error })
       }
     },
-    async attack({ state }): Promise<void> {
-      state.script!.exports.attack()
-    }
+    async down({ state }, { x, y }): Promise<void> {
+      if (state.touch !== 'idle') {
+        return
+      }
+
+      state.touch = 'active'
+
+      try {
+        await state.script!.exports.down(LEFT_EDGE + x, y)
+      } catch (e) {
+        state.touch = 'idle'
+      }
+    },
+    move: throttle(
+      ({ state }, { x, y }): void => {
+        if (state.touch !== 'active') {
+          return
+        }
+
+        state.script!.post({ type: 'move', x, y })
+      }, 50),
+    async up({ state }): Promise<void> {
+      if (state.touch !== 'active') {
+        return
+      }
+
+      state.touch = 'idle'
+
+      return state.script!.exports.up()
+    },
   },
   mutations: {
     [SET_DISCONNECTED](state, { error }) {
       state.status = 'disconnected'
       state.script = null
-      state.metrics = []
       state.error = error
     },
     [SET_CONNECTING](state) {
@@ -112,9 +130,6 @@ export const store = createStore<State>({
       state.status = 'connected'
       state.script = script
     },
-    [SET_METRICS](state, { metrics }) {
-      state.metrics = metrics
-    },
   }
 })
 
@@ -122,6 +137,29 @@ function sleep(duration: number): Promise<void> {
   return new Promise(resolve => {
     setTimeout(() => { resolve() }, duration)
   })
+}
+
+// Based on https://codeburst.io/throttling-and-debouncing-in-javascript-b01cad5c8edf
+function throttle(func: (...args: any[]) => any, limit: number) {
+  let lastFunc: NodeJS.Timeout | null = null
+  let lastRan: number | null = null
+  return function (this: any, ...args: any[]) {
+    const context = this
+    if (lastRan === null) {
+      func.apply(context, args)
+      lastRan = Date.now()
+    } else {
+      if (lastFunc !== null) {
+        clearTimeout(lastFunc)
+      }
+      lastFunc = setTimeout(function () {
+        if ((Date.now() - lastRan!) >= limit) {
+          func.apply(context, args)
+          lastRan = Date.now()
+        }
+      }, limit - (Date.now() - lastRan))
+    }
+  }
 }
 
 declare module '@vue/runtime-core' {
