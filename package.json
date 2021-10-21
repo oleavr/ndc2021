@@ -9,7 +9,7 @@
     "nuxt3": "latest"
   },
   "dependencies": {
-    "@frida/web-client": "^2.0.1",
+    "@frida/web-client": "^2.1.0",
     "@frida/web-shims": "^1.0.1",
     "@vue/reactivity": "^3.2.20",
     "@vue/shared": "^3.2.20",

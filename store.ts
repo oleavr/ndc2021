@@ -70,6 +70,8 @@ export const store = createStore<State>({
           }
         })
 
+        await session.setupPeerConnection()
+
         const script = await session.createScript(agent)
         script.message.connect(message => {
           if (message.type === frida.MessageType.Error) {

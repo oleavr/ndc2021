@@ -314,10 +314,10 @@
   resolved "https://registry.yarnpkg.com/@frida/readable-stream/-/readable-stream-4.1.3.tgz#9babc8cbca3f7e9e6feb2147361eea3c8bd5cf66"
   integrity sha512-ntGUFmi+CryRGRJIK13a/VST2Ad19uivbln8Xd92vKPAARq+6vMIASDyZIqyl5BLRccfiyCHdYgrgQ6RI5rUig==
 
-"@frida/rtc-stream@^1.0.0":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@frida/rtc-stream/-/rtc-stream-1.0.1.tgz#793d587309ce4491bb0809665470bb227eeb83da"
-  integrity sha512-p9ITUYsn0jOZ2rbFBjeGB4sAkDXCMUQIf0sqAJQuqbIKK+KYT2gwV3Zh6YQLCU1ut9KhU0zgSrFyod+Id2Eo0w==
+"@frida/rtc-stream@^1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@frida/rtc-stream/-/rtc-stream-1.0.2.tgz#14ad44cf596db2a4a7bf593661f7693f453db41e"
+  integrity sha512-/KQrsLcrd9ua3+g203RTlAYWSKHHdLasjWWo0Hp4n9fPJ9h3kPjdd8g1RIGqmRarRuGn2mmRo9i2skvtZW8fAQ==
 
 "@frida/stream@^1.0.1":
   version "1.0.1"
@@ -341,13 +341,13 @@
   resolved "https://registry.yarnpkg.com/@frida/util/-/util-1.0.2.tgz#fbcf4918de9e7161e500a8604276770520ec8b0a"
   integrity sha512-rH4pszBgBDE5298FB8mm0Vq0YAK6Ol/lyOrkV3Lo7q9h+BgAcSsVLdHAR+XGiRkpFWIlQEyYBnyNzcUXzwAFZA==
 
-"@frida/web-client@^2.0.1":
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/@frida/web-client/-/web-client-2.0.1.tgz#d362dd5fffe28547f008b8e3a33c47dbb24a9744"
-  integrity sha512-2AA+5wV5HjIalvsMvgbVmg4pHnf3GvYKlbIfRDSRJYLt9UVXHgn59vjP75/n40Am05DfQKyVStOe3XErc7OB+g==
+"@frida/web-client@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@frida/web-client/-/web-client-2.1.0.tgz#ebc00f4b7f6142482340fe8b3f8f3260922214d5"
+  integrity sha512-bQDjpdblN+B9jPdrlbtQgm1xoMVBfeBmay96GFt2mk8halFGm1KwADLT5mjZUS1pqP3lDlFdigNkgeJMigMOKw==
   dependencies:
     "@frida/dbus" "^1.0.4"
-    "@frida/rtc-stream" "^1.0.0"
+    "@frida/rtc-stream" "^1.0.2"
 
 "@frida/web-shims@^1.0.1":
   version "1.0.1"
